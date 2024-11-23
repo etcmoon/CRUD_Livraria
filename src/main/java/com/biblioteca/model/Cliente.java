@@ -38,10 +38,10 @@ public class Cliente extends Usuario {
         this.filaEspera = filaEspera;
     }
 
-    public Cliente(Long userID, String cPF, String nome, String email, String telefone, String endereco,
+    public Cliente(Long userID, String CPF, String nome, String email, String telefone, String endereco,
             LocalDate dataCadastro, String statusConta, String funcao, String senha, List<Emprestimo> emprestimosAtivos,
             List<FilaEspera> filaEspera) {
-        super(userID, cPF, nome, email, telefone, endereco, dataCadastro, statusConta, funcao, senha);
+        super(userID, CPF, nome, email, telefone, endereco, dataCadastro, statusConta, funcao, senha);
         this.emprestimosAtivos = emprestimosAtivos;
         this.filaEspera = filaEspera;
     }

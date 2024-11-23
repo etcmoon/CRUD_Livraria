@@ -102,6 +102,7 @@ public class Emprestimo {
         this.multa = multa;
     }
 
+
     public Emprestimo() {
     }
 

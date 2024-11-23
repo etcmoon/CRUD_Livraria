@@ -10,5 +10,11 @@ import com.biblioteca.model.Emprestimo;
 @Repository
 public interface EmprestimoRepository extends JpaRepository<Emprestimo, Long> {
     // Métodos específicos se necessário
-    List<Emprestimo> findByUsuarioId(Long usuarioId);
+    List<Emprestimo> findByClienteUserID(Long userID); // For finding by client's userID
+    
+    // Find empréstimos with multa
+    List<Emprestimo> findByMultaIsNotNull();
+    
+    // Find by cliente's userID and has multa
+    List<Emprestimo> findByClienteUserIDAndMultaIsNotNull(Long userID);
 }

@@ -31,9 +31,9 @@ public class ClienteService {
         return clienteRepository.save(cliente);
     }
 
-    //public void deletarCliente(Long id) {
-    //    clienteRepository.deleteById(id);
-    //}
+    public void deletarCliente(Long id) {
+        clienteRepository.deleteById(id);
+    }
 
     // Outros métodos conforme necessário
 }

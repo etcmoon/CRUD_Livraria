@@ -118,8 +118,8 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    public List<Emprestimo> consultarEmprestimos(Long usuarioId) {
-        return emprestimoRepository.findByUsuarioId(usuarioId);
+    public List<Emprestimo> consultarEmprestimos(Long clienteId) {
+        return emprestimoRepository.findByClienteUserID(clienteId);
     }
 
     public List<Multa> consultarMultas(Long usuarioId) {

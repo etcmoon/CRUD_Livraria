@@ -59,9 +59,8 @@ public class LivroService {
         livroRepository.deleteById(id);
     }
 
-    public List<Livro> buscarLivro(String criterio) {
-        // Implementar lógica de busca por título ou autor
-        return livroRepository.findByTituloOuAutor(criterio, criterio);
+    public List<Livro> buscarLivro(String titulo) {
+        return livroRepository.findByTitulo(titulo);
     }
 
     public Livro atualizarQuantidade(Long id, int quantidade) {
