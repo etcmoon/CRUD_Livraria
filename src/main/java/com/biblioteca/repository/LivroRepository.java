@@ -1,12 +1,15 @@
 package com.biblioteca.repository;
 
-import com.biblioteca.model.Livro;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import com.biblioteca.model.Livro;
 
 @Repository
 public interface LivroRepository extends JpaRepository<Livro, Long> {
     Optional<Livro> findByIsbn(String isbn);
+    List<Livro> findByTituloOuAutor(String titulo, String autor);
 }

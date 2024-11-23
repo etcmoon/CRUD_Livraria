@@ -1,12 +1,13 @@
 package com.biblioteca.service;
 
-import com.biblioteca.model.Livro;
-import com.biblioteca.repository.LivroRepository;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import com.biblioteca.model.Livro;
+import com.biblioteca.repository.LivroRepository;
 
 @Service
 public class LivroService {
@@ -30,13 +31,47 @@ public class LivroService {
         return livroRepository.save(livro);
     }
 
+    public boolean verificarDisponibilidade(Long id) {
+        Optional<Livro> livroOpt = livroRepository.findById(id);
+        if (!livroOpt.isPresent()) {
+            throw new IllegalArgumentException("Livro não encontrado.");
+        }
+        return livroOpt.get().isDisponivel();
+    }
+
+    public Livro editarLivro(Long id, Livro novosDados) {
+        Optional<Livro> livroOpt = livroRepository.findById(id);
+        if (!livroOpt.isPresent()) {
+            throw new IllegalArgumentException("Livro não encontrado.");
+        }
+        Livro livro = livroOpt.get();
+        livro.setTitulo(novosDados.getTitulo());
+        livro.setAutor(novosDados.getAutor());
+        livro.setDisponivel(novosDados.isDisponivel());
+        // Atualize outros campos conforme necessário
+        return livroRepository.save(livro);
+    }
+
     public void removerLivro(Long id) {
+        if (!livroRepository.existsById(id)) {
+            throw new IllegalArgumentException("Livro não encontrado.");
+        }
         livroRepository.deleteById(id);
     }
 
-    public List<Livro> buscarLivroPorCriterio(String criterio) {
-        // Implementar lógica de busca
-        return livroRepository.findAll(); // Placeholder
+    public List<Livro> buscarLivro(String criterio) {
+        // Implementar lógica de busca por título ou autor
+        return livroRepository.findByTituloOuAutor(criterio, criterio);
+    }
+
+    public Livro atualizarQuantidade(Long id, int quantidade) {
+        Optional<Livro> livroOpt = livroRepository.findById(id);
+        if (!livroOpt.isPresent()) {
+            throw new IllegalArgumentException("Livro não encontrado.");
+        }
+        Livro livro = livroOpt.get();
+        livro.setQuantidadeDisponivel(quantidade);
+        return livroRepository.save(livro);
     }
 
     // Outros métodos conforme necessário

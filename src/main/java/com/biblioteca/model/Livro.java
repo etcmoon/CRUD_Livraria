@@ -76,7 +76,7 @@ public class Livro {
     public void setIsbn(String isbn) {
         this.isbn = isbn;
     }
-    public Boolean getDisponivel() {
+    public Boolean isDisponivel() {
         return disponivel;
     }
     public void setDisponivel(Boolean disponivel) {

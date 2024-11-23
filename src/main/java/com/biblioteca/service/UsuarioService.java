@@ -1,13 +1,20 @@
 package com.biblioteca.service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.biblioteca.model.Emprestimo;
+import com.biblioteca.model.Livro;
+import com.biblioteca.model.Multa;
 import com.biblioteca.model.Usuario;
+import com.biblioteca.repository.EmprestimoRepository;
+import com.biblioteca.repository.LivroRepository;
+import com.biblioteca.repository.MultaRepository;
 import com.biblioteca.repository.UsuarioRepository;
 
 
@@ -15,6 +22,15 @@ import com.biblioteca.repository.UsuarioRepository;
 public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private LivroRepository livroRepository;
+
+    @Autowired
+    private EmprestimoRepository emprestimoRepository;
+
+    @Autowired
+    private MultaRepository multaRepository;
 
     @Transactional
     public Usuario registrarUsuario(Usuario usuario) {
@@ -80,6 +96,34 @@ public class UsuarioService {
             usuario.setSenha(novaSenha);
             usuarioRepository.save(usuario);
         }
+    }
+
+    public Livro consultarLivro(Long livroId) {
+        Optional<Livro> livroOpt = livroRepository.findById(livroId);
+        if (!livroOpt.isPresent()) {
+            throw new IllegalArgumentException("Livro não encontrado.");
+        }
+        return livroOpt.get();
+    }
+
+    public Usuario atualizarCadastro(Long usuarioId, Usuario novoDados) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(usuarioId);
+        if (!usuarioOpt.isPresent()) {
+            throw new IllegalArgumentException("Usuário não encontrado.");
+        }
+        Usuario usuario = usuarioOpt.get();
+        usuario.setNome(novoDados.getNome());
+        usuario.setEmail(novoDados.getEmail());
+        // Atualize outros campos conforme necessário
+        return usuarioRepository.save(usuario);
+    }
+
+    public List<Emprestimo> consultarEmprestimos(Long usuarioId) {
+        return emprestimoRepository.findByUsuarioId(usuarioId);
+    }
+
+    public List<Multa> consultarMultas(Long usuarioId) {
+        return multaRepository.findByEmprestimoClienteUserID(usuarioId);
     }
 
     public Optional<Usuario> buscarUsuarioPorId(Long id) {
