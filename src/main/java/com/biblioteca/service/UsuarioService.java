@@ -34,13 +34,6 @@ public class UsuarioService {
 
     @Transactional
     public Usuario registrarUsuario(Usuario usuario) {
-        // Verificar se o email já está em uso
-        Optional<Usuario> usuarioEmail = usuarioRepository.findByEmail(usuario.getEmail());
-        if (usuarioEmail.isPresent()) {
-            throw new IllegalArgumentException("O email já está em uso.");
-        }
-
-        // Verificar se o CPF já está em uso
         Optional<Usuario> usuarioCPF = usuarioRepository.findByCPF(usuario.getCPF());
         if (usuario.getNome() == null || usuario.getNome().trim().isEmpty() ||
         usuario.getEmail() == null || usuario.getEmail().trim().isEmpty() ||
@@ -48,7 +41,13 @@ public class UsuarioService {
         usuario.getSenha() == null || usuario.getSenha().trim().isEmpty()) {
         throw new IllegalArgumentException("Erro ao registrar usuário. Verifique os dados fornecidos.");
     }
-        
+        // Verificar se o email já está em uso
+        Optional<Usuario> usuarioEmail = usuarioRepository.findByEmail(usuario.getEmail());
+        if (usuarioEmail.isPresent()) {
+            throw new IllegalArgumentException("O email já está em uso.");
+        }
+
+        // Verificar se o CPF já está em uso
         if (usuarioCPF.isPresent()) {
             throw new IllegalArgumentException("O CPF já está em uso.");
         }

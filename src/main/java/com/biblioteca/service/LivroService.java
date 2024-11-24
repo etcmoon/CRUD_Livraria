@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import com.biblioteca.model.Livro;
 import com.biblioteca.repository.LivroRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class LivroService {
 
@@ -16,11 +18,16 @@ public class LivroService {
     private LivroRepository livroRepository;
 
     public Livro adicionarLivro(Livro livro) {
+        atualizarDisponibilidade(livro);
         return livroRepository.save(livro);
     }
 
     public Optional<Livro> buscarLivroPorId(Long id) {
-        return livroRepository.findById(id);
+        try{
+            return livroRepository.findById(id);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Livro não encontrado.");
+        }
     }
 
     public List<Livro> listarLivros() {
@@ -28,6 +35,7 @@ public class LivroService {
     }
 
     public Livro atualizarLivro(Livro livro) {
+        atualizarDisponibilidade(livro);
         return livroRepository.save(livro);
     }
 
@@ -47,11 +55,16 @@ public class LivroService {
         Livro livro = livroOpt.get();
         livro.setTitulo(novosDados.getTitulo());
         livro.setAutor(novosDados.getAutor());
-        livro.setDisponivel(novosDados.isDisponivel());
-        // Atualize outros campos conforme necessário
+        livro.setCategoria(novosDados.getCategoria());
+        livro.setEditora(novosDados.getEditora());
+        livro.setAnoPublicacao(novosDados.getAnoPublicacao());
+        livro.setIsbn(novosDados.getIsbn());
+        livro.setQuantidadeDisponivel(novosDados.getQuantidadeDisponivel());
+        atualizarDisponibilidade(livro);
         return livroRepository.save(livro);
     }
 
+    @Transactional
     public void removerLivro(Long id) {
         if (!livroRepository.existsById(id)) {
             throw new IllegalArgumentException("Livro não encontrado.");
@@ -70,7 +83,17 @@ public class LivroService {
         }
         Livro livro = livroOpt.get();
         livro.setQuantidadeDisponivel(quantidade);
+        atualizarDisponibilidade(livro);
         return livroRepository.save(livro);
+    }
+
+    // Método auxiliar para atualizar a disponibilidade do livro
+    private void atualizarDisponibilidade(Livro livro) {
+        if (livro.getQuantidadeDisponivel() != null && livro.getQuantidadeDisponivel() == 0) {
+            livro.setDisponivel(false);
+        } else {
+            livro.setDisponivel(true);
+        }
     }
 
     // Outros métodos conforme necessário

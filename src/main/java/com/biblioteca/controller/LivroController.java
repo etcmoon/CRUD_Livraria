@@ -1,7 +1,6 @@
 package com.biblioteca.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,12 +31,14 @@ public class LivroController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Livro> buscarLivroPorId(@PathVariable Long id) {
-        Optional<Livro> livroOpt = livroService.buscarLivroPorId(id);
-        return livroOpt.map(ResponseEntity::ok)
-                      .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> buscarLivroPorId(@PathVariable Long id) {
+        try {
+            Livro livro = livroService.buscarLivroPorId(id).orElseThrow(() -> new IllegalArgumentException("Livro não encontrado."));
+            return ResponseEntity.ok(livro);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
     }
-
     @GetMapping
     public ResponseEntity<List<Livro>> listarLivros() {
         List<Livro> livros = livroService.listarLivros();
@@ -45,23 +46,42 @@ public class LivroController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Livro> atualizarLivro(@PathVariable Long id, @RequestBody Livro livro) {
-        livro.setLivroID(id);
-        Livro livroAtualizado = livroService.atualizarLivro(livro);
-        return ResponseEntity.ok(livroAtualizado);
+    public ResponseEntity<?> atualizarLivro(@PathVariable Long id, @RequestBody Livro livro) {
+        try {
+            livro.setLivroID(id);
+            Livro livroAtualizado = livroService.atualizarLivro(livro);
+            return ResponseEntity.ok(livroAtualizado);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removerLivro(@PathVariable Long id) {
-        livroService.removerLivro(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> removerLivro(@PathVariable Long id) {
+        try {
+            livroService.removerLivro(id);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<List<Livro>> buscarLivroPorCriterio(@RequestParam String criterio) {
-        List<Livro> livros = livroService.buscarLivro(criterio);
+    public ResponseEntity<List<Livro>> buscarLivroTitulo(@RequestParam String titulo) {
+        List<Livro> livros = livroService.buscarLivro(titulo);
+        if (livros.isEmpty()) {
+            return ResponseEntity.status(404).body(livros);
+        }
         return ResponseEntity.ok(livros);
     }
 
-    // Outros endpoints conforme necessário
+    @PutMapping("/{id}/quantidade")
+    public ResponseEntity<?> atualizarQuantidade(@PathVariable Long id, @RequestParam int quantidade) {
+        try {
+            Livro livroAtualizado = livroService.atualizarQuantidade(id, quantidade);
+            return ResponseEntity.ok(livroAtualizado);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
 }

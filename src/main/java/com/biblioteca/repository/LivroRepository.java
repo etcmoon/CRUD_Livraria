@@ -12,4 +12,5 @@ import com.biblioteca.model.Livro;
 public interface LivroRepository extends JpaRepository<Livro, Long> {
     Optional<Livro> findByIsbn(String isbn);
     List<Livro> findByTitulo(String titulo);
+    List<Livro> findByAutor(String autor);
 }

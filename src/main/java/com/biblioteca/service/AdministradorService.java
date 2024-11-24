@@ -1,5 +1,6 @@
 package com.biblioteca.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +21,7 @@ import com.biblioteca.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 
 @Service
-public class AdministradorService {
+public class AdministradorService extends UsuarioService {
 
     @Autowired
     private AdministradorRepository administradorRepository;
@@ -42,7 +43,11 @@ public class AdministradorService {
     }
 
     public Optional<Administrador> buscarAdministradorPorId(Long id) {
-        return administradorRepository.findById(id);
+        try {
+            return administradorRepository.findById(id);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Administrador não encontrado.");
+        }
     }
 
     public List<Administrador> listarAdministradores() {
@@ -53,26 +58,50 @@ public class AdministradorService {
         return administradorRepository.save(administrador);
     }
 
-    public void deletarAdministrador(Long id) {
+    public String deletarAdministrador(Long id) {
+        try {
         administradorRepository.deleteById(id);
+        return "Administrador removido com suceso";
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Administrador não encontrado.");
+        }
     }
 
     // Cadastrar um novo cliente
-    public Cliente cadastrarCliente(Cliente cliente) {
-        return clienteRepository.save(cliente);
+    @Transactional
+    @Override
+    public Usuario registrarUsuario(Usuario usuario) {
+        Optional<Usuario> usuarioCPF = usuarioRepository.findByCPF(usuario.getCPF());
+        if (usuario.getNome() == null || usuario.getNome().trim().isEmpty() ||
+        usuario.getEmail() == null || usuario.getEmail().trim().isEmpty() ||
+        usuario.getCPF() == null || usuario.getCPF().trim().isEmpty() ||
+        usuario.getSenha() == null || usuario.getSenha().trim().isEmpty() ||
+        usuario.getFuncao() == null || usuario.getFuncao().trim().isEmpty()) {
+        throw new IllegalArgumentException("Erro ao registrar usuário. Verifique os dados fornecidos.");
     }
-
-    // Atualizar informações de um cliente existente
-    public Cliente atualizarCliente(Long clienteId, Cliente novosDados) {
-        Optional<Cliente> clienteOpt = clienteRepository.findById(clienteId);
-        if (!clienteOpt.isPresent()) {
-            throw new IllegalArgumentException("Cliente não encontrado.");
+        // Verificar se o email já está em uso
+        Optional<Usuario> usuarioEmail = usuarioRepository.findByEmail(usuario.getEmail());
+        if (usuarioEmail.isPresent()) {
+            throw new IllegalArgumentException("O email já está em uso.");
         }
-        Cliente cliente = clienteOpt.get();
-        cliente.setNome(novosDados.getNome());
-        cliente.setEmail(novosDados.getEmail());
-        // Atualize outros campos conforme necessário
-        return clienteRepository.save(cliente);
+
+        // Verificar se o CPF já está em uso
+        if (usuarioCPF.isPresent()) {
+            throw new IllegalArgumentException("O CPF já está em uso.");
+        }
+
+        // Definir data de cadastro se não estiver definida
+        if (usuario.getDataCadastro() == null) {
+            usuario.setDataCadastro(LocalDate.now());
+        }
+
+        // Definir status da conta como "Ativa" se não estiver definido
+        if (usuario.getStatusConta() == null || usuario.getStatusConta().isEmpty()) {
+            usuario.setStatusConta("Ativa");
+        }
+
+        // Salvar o usuário no banco de dados
+        return usuarioRepository.save(usuario);
     }
 
     // Listar todos os usuários
@@ -119,15 +148,43 @@ public class AdministradorService {
         livro.setTitulo(novosDados.getTitulo());
         livro.setAutor(novosDados.getAutor());
         livro.setDisponivel(novosDados.isDisponivel());
+        livro.setCategoria(novosDados.getCategoria());
         return livroRepository.save(livro);
     }
 
     // Remover um livro
-    public void removerLivro(Long livroId) {
+    public String removerLivro(Long livroId) {
         if (!livroRepository.existsById(livroId)) {
             throw new IllegalArgumentException("Livro não encontrado.");
         }
         livroRepository.deleteById(livroId);
+        return "Livro removido com sucesso.";
+    }
+
+    // Atualizar Usuário
+    public Usuario atualizarUsuario(Long usuarioId, Usuario novosDados) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(usuarioId);
+        if (!usuarioOpt.isPresent()) {
+            throw new IllegalArgumentException("Usuário não encontrado.");
+        }
+        Usuario usuario = usuarioOpt.get();
+        usuario.setNome(novosDados.getNome());
+        usuario.setEmail(novosDados.getEmail());
+        // Atualize outros campos conforme necessário
+        return usuarioRepository.save(usuario);
+    }
+
+    // Atualizar Multa
+    public Multa atualizarMulta(Long multaId, Multa novosDados) {
+        Optional<Multa> multaOpt = multaRepository.findById(multaId);
+        if (!multaOpt.isPresent()) {
+            throw new IllegalArgumentException("Multa não encontrada.");
+        }
+        Multa multa = multaOpt.get();
+        multa.setValor(novosDados.getValor());
+        multa.setStatusPagamento(novosDados.getStatusPagamento());
+        // Atualize outros campos conforme necessário
+        return multaRepository.save(multa);
     }
 
     // Outros métodos conforme necessário
