@@ -1,7 +1,5 @@
 package com.biblioteca.controller;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,24 +21,24 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @PostMapping("/register")
-    public ResponseEntity<Usuario> registerUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<?> registerUsuario(@RequestBody Usuario usuario) {
         try {
             Usuario novoUsuario = usuarioService.registrarUsuario(usuario);
             return ResponseEntity.ok(novoUsuario);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Usuario> login(@RequestParam String email, @RequestParam String senha) {
-        Optional<Usuario> usuarioOpt = usuarioService.login(email, senha);
-        if (usuarioOpt.isPresent()) {
-            return ResponseEntity.ok(usuarioOpt.get());
+    public ResponseEntity<?> login(@RequestParam String email, @RequestParam String senha) {
+        try {
+            Usuario usuario = usuarioService.login(email, senha);
+            return ResponseEntity.ok(usuario);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(401).body(e.getMessage());
         }
-        return ResponseEntity.status(401).build();
     }
-
     @PostMapping("/{id}/logout")
     public ResponseEntity<String> logout(@PathVariable Long id) {
         try {
@@ -52,9 +50,16 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}/alterarSenha")
-    public ResponseEntity<Void> alterarSenha(@PathVariable Long id, @RequestParam String novaSenha) {
-        usuarioService.alterarSenha(id, novaSenha);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> alterarSenha(@PathVariable Long id, @RequestParam(value = "novaSenha", required = false) String novaSenha) {
+        if (novaSenha == null || novaSenha.trim().isEmpty()) {
+            return ResponseEntity.status(400).body("A nova senha é obrigatória.");
+        }
+        try {
+            usuarioService.alterarSenha(id, novaSenha);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body("Usuário não encontrado.");
+        }
     }
 
     // Outros endpoints conforme necessário

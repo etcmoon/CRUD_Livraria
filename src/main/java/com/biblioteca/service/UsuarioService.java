@@ -42,6 +42,13 @@ public class UsuarioService {
 
         // Verificar se o CPF já está em uso
         Optional<Usuario> usuarioCPF = usuarioRepository.findByCPF(usuario.getCPF());
+        if (usuario.getNome() == null || usuario.getNome().trim().isEmpty() ||
+        usuario.getEmail() == null || usuario.getEmail().trim().isEmpty() ||
+        usuario.getCPF() == null || usuario.getCPF().trim().isEmpty() ||
+        usuario.getSenha() == null || usuario.getSenha().trim().isEmpty()) {
+        throw new IllegalArgumentException("Erro ao registrar usuário. Verifique os dados fornecidos.");
+    }
+        
         if (usuarioCPF.isPresent()) {
             throw new IllegalArgumentException("O CPF já está em uso.");
         }
@@ -65,12 +72,12 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    public Optional<Usuario> login(String email, String senha) {
-        Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
-        if (usuario.isPresent() && usuario.get().getSenha().equals(senha)) {
-            return usuario;
+    public Usuario login(String email, String senha) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+        if (usuarioOpt.isPresent() && usuarioOpt.get().getSenha().equals(senha)) {
+            return usuarioOpt.get();
         }
-        return Optional.empty();
+        throw new IllegalArgumentException("Usuário ou senha incorretos");
     }
 
     @Transactional
@@ -80,22 +87,22 @@ public class UsuarioService {
         if (!usuarioOpt.isPresent()) {
             throw new IllegalArgumentException("Usuário não encontrado.");
         }
-
-        Usuario usuario = usuarioOpt.get();
-
-        // Aqui, você pode implementar lógica adicional de logout, como invalidar tokens
-        // ou remover informações de sessão. Para simplificação, retornaremos uma mensagem de sucesso.
-
-        return "Logout realizado com sucesso para o usuário: " + usuario.getNome();
+        return "Logout realizado com sucesso";
     }
 
-    public void alterarSenha(Long usuarioId, String novaSenha) {
-        Optional<Usuario> usuarioOpt = usuarioRepository.findById(usuarioId);
-        if (usuarioOpt.isPresent()) {
-            Usuario usuario = usuarioOpt.get();
-            usuario.setSenha(novaSenha);
-            usuarioRepository.save(usuario);
+    public void alterarSenha(Long id, String novaSenha) {
+        if (novaSenha == null || novaSenha.trim().isEmpty()) {
+            throw new IllegalArgumentException("A nova senha é obrigatória.");
         }
+
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
+        if (!usuarioOpt.isPresent()) {
+            throw new IllegalArgumentException("Usuário não encontrado.");
+        }
+
+        Usuario usuario = usuarioOpt.get();
+        usuario.setSenha(novaSenha);
+        usuarioRepository.save(usuario);
     }
 
     public Livro consultarLivro(Long livroId) {
