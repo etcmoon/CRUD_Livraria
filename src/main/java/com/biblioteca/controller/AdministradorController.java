@@ -52,12 +52,12 @@ public class AdministradorController extends UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletarAdministrador(@PathVariable Long id) {
+    public ResponseEntity<?> removerUsuario(@PathVariable Long id) {
         try {
-            administradorService.deletarAdministrador(id);
+            administradorService.removerUsuario(id);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Administrador não encontrado.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario não encontrado.");
         }
     }
 
@@ -83,7 +83,7 @@ public class AdministradorController extends UsuarioController {
     @PostMapping("/livros")
     public ResponseEntity<?> cadastrarLivro(@RequestBody Livro livro) {
         try {
-            Livro novoLivro = administradorService.cadastrarLivro(livro);
+            Livro novoLivro = administradorService.registrarLivro(livro);
             return ResponseEntity.ok(novoLivro);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

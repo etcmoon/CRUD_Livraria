@@ -34,7 +34,6 @@ public class UsuarioService {
 
     @Transactional
     public Usuario registrarUsuario(Usuario usuario) {
-        Optional<Usuario> usuarioCPF = usuarioRepository.findByCPF(usuario.getCPF());
         if (usuario.getNome() == null || usuario.getNome().trim().isEmpty() ||
         usuario.getEmail() == null || usuario.getEmail().trim().isEmpty() ||
         usuario.getCPF() == null || usuario.getCPF().trim().isEmpty() ||
@@ -48,6 +47,7 @@ public class UsuarioService {
         }
 
         // Verificar se o CPF já está em uso
+        Optional<Usuario> usuarioCPF = usuarioRepository.findByCPF(usuario.getCPF());
         if (usuarioCPF.isPresent()) {
             throw new IllegalArgumentException("O CPF já está em uso.");
         }
@@ -112,15 +112,24 @@ public class UsuarioService {
         return livroOpt.get();
     }
 
-    public Usuario atualizarCadastro(Long usuarioId, Usuario novoDados) {
+    public Usuario atualizarCadastro(Long usuarioId, Usuario novosDados) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findById(usuarioId);
         if (!usuarioOpt.isPresent()) {
             throw new IllegalArgumentException("Usuário não encontrado.");
         }
         Usuario usuario = usuarioOpt.get();
-        usuario.setNome(novoDados.getNome());
-        usuario.setEmail(novoDados.getEmail());
-        // Atualize outros campos conforme necessário
+        if (novosDados.getNome() != null){
+        usuario.setNome(novosDados.getNome());
+        }
+        if (novosDados.getEmail() != null){
+        usuario.setEmail(novosDados.getEmail());
+        }
+        if (novosDados.getEndereco() != null){
+        usuario.setEndereco(novosDados.getEndereco());
+        }
+        if (novosDados.getTelefone() != null){
+        usuario.setTelefone(novosDados.getTelefone());
+        }
         return usuarioRepository.save(usuario);
     }
 
