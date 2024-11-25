@@ -1,12 +1,21 @@
 package com.biblioteca.controller;
 
-import com.biblioteca.model.Emprestimo;
-import com.biblioteca.service.EmprestimoService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.biblioteca.model.Emprestimo;
+import com.biblioteca.service.EmprestimoService;
 
 @RestController
 @RequestMapping("/api/emprestimos")
@@ -16,9 +25,13 @@ public class EmprestimoController {
     private EmprestimoService emprestimoService;
 
     @PostMapping
-    public ResponseEntity<Emprestimo> registrarEmprestimo(@RequestBody Emprestimo emprestimo) {
-        Emprestimo novoEmprestimo = emprestimoService.registrarEmprestimo(emprestimo);
-        return ResponseEntity.ok(novoEmprestimo);
+    public ResponseEntity<?> registrarEmprestimo(@RequestBody Long clienteId, Long livroId) {
+        try{
+            Emprestimo novoEmprestimo = emprestimoService.registrarEmprestimo(clienteId, livroId);
+            return ResponseEntity.ok(novoEmprestimo);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")
