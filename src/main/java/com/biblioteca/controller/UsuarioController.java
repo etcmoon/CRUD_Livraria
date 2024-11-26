@@ -1,6 +1,7 @@
 package com.biblioteca.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,47 +21,69 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
+    /**
+     * Endpoint para registrar um novo Usuário.
+     *
+     * @param usuario Os dados do Usuário a ser registrado.
+     * @return Resposta HTTP com o Usuário registrado ou mensagem de erro.
+     */
     @PostMapping("/register")
     public ResponseEntity<?> registrarUsuario(@RequestBody Usuario usuario) {
         try {
             Usuario novoUsuario = usuarioService.registrarUsuario(usuario);
-            return ResponseEntity.ok(novoUsuario);
+            return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
+    /**
+     * Endpoint para login de Usuário.
+     *
+     * @param email Email do Usuário.
+     * @param senha Senha do Usuário.
+     * @return Resposta HTTP com o resultado do login ou mensagem de erro.
+     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam String email, @RequestParam String senha) {
         try {
             Usuario usuario = usuarioService.login(email, senha);
             return ResponseEntity.ok(usuario);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(401).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
+
+    /**
+     * Endpoint para logout de Usuário.
+     *
+     * @param id ID do Usuário que está realizando o logout.
+     * @return Resposta HTTP indicando o sucesso da operação.
+     */
     @PostMapping("/{id}/logout")
     public ResponseEntity<String> logout(@PathVariable Long id) {
         try {
-            String mensagem = usuarioService.logout(id);
-            return ResponseEntity.ok(mensagem);
+            usuarioService.logout(id);
+            return ResponseEntity.ok("Logout realizado com sucesso.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
+    /**
+     * Endpoint para alterar a senha de um Usuário.
+     *
+     * @param id        ID do Usuário.
+     * @param novaSenha Nova senha a ser definida.
+     * @return Resposta HTTP indicando o sucesso ou falha da operação.
+     */
     @PutMapping("/{id}/alterarSenha")
-    public ResponseEntity<?> alterarSenha(@PathVariable Long id, @RequestParam(value = "novaSenha", required = false) String novaSenha) {
-        if (novaSenha == null || novaSenha.trim().isEmpty()) {
-            return ResponseEntity.status(400).body("A nova senha é obrigatória.");
-        }
+    public ResponseEntity<?> alterarSenha(@PathVariable Long id, @RequestParam(required = false) String novaSenha) {
         try {
             usuarioService.alterarSenha(id, novaSenha);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok("Senha alterada com sucesso.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(404).body("Usuário não encontrado.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-
-    // Outros endpoints conforme necessário
 }

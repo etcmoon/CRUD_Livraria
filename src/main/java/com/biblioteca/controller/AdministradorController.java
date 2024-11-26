@@ -29,12 +29,12 @@ public class AdministradorController extends UsuarioController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarAdministradorPorId(@PathVariable Long id) {
-        try{
-            Administrador administrador = administradorService.buscarAdministradorPorId(id).
-                orElseThrow(() -> new IllegalArgumentException("Administrador não encontrado."));
+        try {
+            Administrador administrador = administradorService.buscarAdministradorPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("Administrador não encontrado."));
             return ResponseEntity.ok(administrador);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
@@ -44,86 +44,130 @@ public class AdministradorController extends UsuarioController {
         return ResponseEntity.ok(admins);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Administrador> atualizarAdministrador(@PathVariable Long id, @RequestBody Administrador administrador) {
-        administrador.setUserID(id);
-        Administrador adminAtualizado = administradorService.atualizarAdministrador(administrador);
-        return ResponseEntity.ok(adminAtualizado);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> removerUsuario(@PathVariable Long id) {
-        try {
-            administradorService.removerUsuario(id);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario não encontrado.");
-        }
-    }
-
-    // Cadastrar um novo cliente
+    /**
+     * Endpoint para cadastrar um novo Usuário.
+     *
+     * @param usuario Os dados do Usuário a ser criado.
+     * @return Resposta HTTP com o Usuário criado ou mensagem de erro.
+     */
     @PostMapping("/usuarios")
-    @Override
-    public ResponseEntity<?> registrarUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<?> criarUsuario(@RequestBody Usuario usuario) {
         try {
             Usuario novoUsuario = administradorService.registrarUsuario(usuario);
-            return ResponseEntity.ok(novoUsuario);
+            return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
-    // Listar todos os usuários
+    /**
+     * Endpoint para listar todos os Usuários.
+     *
+     * @return Resposta HTTP com a lista de Usuários.
+     */
     @GetMapping("/usuarios")
     public ResponseEntity<List<Usuario>> listarUsuarios() {
         List<Usuario> usuarios = administradorService.listarUsuarios();
         return ResponseEntity.ok(usuarios);
     }
 
+    /**
+     * Endpoint para cadastrar um novo Livro.
+     *
+     * @param livro Os dados do Livro a ser criado.
+     * @return Resposta HTTP com o Livro criado ou mensagem de erro.
+     */
     @PostMapping("/livros")
     public ResponseEntity<?> cadastrarLivro(@RequestBody Livro livro) {
         try {
             Livro novoLivro = administradorService.registrarLivro(livro);
-            return ResponseEntity.ok(novoLivro);
+            return ResponseEntity.status(HttpStatus.CREATED).body(novoLivro);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
-    // Atualizar informações de um livro existente
+    /**
+     * Endpoint para atualizar informações de um Livro existente.
+     *
+     * @param livroId ID do Livro a ser atualizado.
+     * @param livro   Dados atualizados do Livro.
+     * @return Resposta HTTP com o Livro atualizado ou mensagem de erro.
+     */
     @PutMapping("/livros/{livroId}")
     public ResponseEntity<?> atualizarLivro(@PathVariable Long livroId, @RequestBody Livro livro) {
-        Livro livroAtualizado = administradorService.atualizarLivro(livroId, livro);
-        return ResponseEntity.ok(livroAtualizado);
+        try {
+            Livro livroAtualizado = administradorService.atualizarLivro(livroId, livro);
+            return ResponseEntity.ok(livroAtualizado);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
-    // Remover um livro
+    /**
+     * Endpoint para remover um Livro.
+     *
+     * @param livroId ID do Livro a ser removido.
+     * @return Resposta HTTP indicando o sucesso ou falha da operação.
+     */
     @DeleteMapping("/livros/{livroId}")
     public ResponseEntity<Void> removerLivro(@PathVariable Long livroId) {
-        administradorService.removerLivro(livroId);
-        return ResponseEntity.ok().build();
+        try {
+            administradorService.removerLivro(livroId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
-    // Atualizar Usuário
+    /**
+     * Endpoint para atualizar um Usuário existente.
+     *
+     * @param usuarioId ID do Usuário a ser atualizado.
+     * @param novosDados Dados atualizados do Usuário.
+     * @return Resposta HTTP com o Usuário atualizado ou mensagem de erro.
+     */
     @PutMapping("/usuarios/{usuarioId}")
     public ResponseEntity<?> atualizarUsuario(@PathVariable Long usuarioId, @RequestBody Usuario novosDados) {
-        Usuario usuarioAtualizado = administradorService.atualizarUsuario(usuarioId, novosDados);
-        return ResponseEntity.ok(usuarioAtualizado);
+        try {
+            Usuario usuarioAtualizado = administradorService.atualizarUsuario(usuarioId, novosDados);
+            return ResponseEntity.ok(usuarioAtualizado);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
-    // Atualizar Multa
+    /**
+     * Endpoint para atualizar uma Multa existente.
+     *
+     * @param multaId  ID da Multa a ser atualizada.
+     * @param novosDados Dados atualizados da Multa.
+     * @return Resposta HTTP com a Multa atualizada ou mensagem de erro.
+     */
     @PutMapping("/multas/{multaId}")
     public ResponseEntity<Multa> atualizarMulta(@PathVariable Long multaId, @RequestBody Multa novosDados) {
-        Multa multaAtualizada = administradorService.atualizarMulta(multaId, novosDados);
-        return ResponseEntity.ok(multaAtualizada);
+        try {
+            Multa multaAtualizada = administradorService.atualizarMulta(multaId, novosDados);
+            return ResponseEntity.ok(multaAtualizada);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
-     // Notificar um cliente
+    /**
+     * Endpoint para notificar um Cliente.
+     *
+     * @param clienteId ID do Cliente a ser notificado.
+     * @param mensagem  Mensagem de notificação.
+     * @return Resposta HTTP indicando o sucesso ou falha da operação.
+     */
     @PostMapping("/clientes/{clienteId}/notificacoes")
     public ResponseEntity<Void> notificarCliente(@PathVariable Long clienteId, @RequestBody String mensagem) {
-        administradorService.notificarCliente(clienteId, mensagem);
-        return ResponseEntity.ok().build();
+        try {
+            administradorService.notificarCliente(clienteId, mensagem);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
-
-    // Outros endpoints conforme necessário
 }
