@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.biblioteca.model.Cliente;
+import com.biblioteca.model.Emprestimo;
 import com.biblioteca.service.ClienteService;
 
 @RestController
@@ -53,6 +55,16 @@ public class ClienteController {
             return ResponseEntity.ok(cliente);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{Id}/emprestimos")
+    public ResponseEntity<?> realizarEmprestimo(@PathVariable Long clienteId, @RequestParam Long livroId) {
+        try {
+            Emprestimo emprestimo = clienteService.realizarEmprestimo(clienteId, livroId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(emprestimo);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
