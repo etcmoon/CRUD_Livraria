@@ -1,6 +1,7 @@
 package com.biblioteca.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -52,8 +53,7 @@ public class ClienteController {
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarClientePorId(@PathVariable Long id) {
         try {
-            Cliente cliente = clienteService.buscarClientePorId(id)
-                .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado."));
+            Optional<Cliente> cliente = clienteService.buscarClientePorId(id);
             return ResponseEntity.ok(cliente);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -61,9 +61,9 @@ public class ClienteController {
     }
 
     @PostMapping("/{Id}/emprestimos")
-    public ResponseEntity<?> realizarEmprestimo(@PathVariable Long clienteId, @RequestParam Long livroId) {
+    public ResponseEntity<?> realizarEmprestimo(@PathVariable Long id, @RequestParam Long livroId) {
         try {
-            Emprestimo emprestimo = clienteService.realizarEmprestimo(clienteId, livroId);
+            Emprestimo emprestimo = clienteService.realizarEmprestimo(id, livroId);
             return ResponseEntity.status(HttpStatus.CREATED).body(emprestimo);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

@@ -66,12 +66,15 @@ public class ClienteService {
         }
 
         // Criar o empréstimo
-        Emprestimo emprestimo = new Emprestimo();
-        emprestimo.setCliente(cliente);
-        emprestimo.setLivro(livro);
-        emprestimo.setDataEmprestimo(LocalDate.now());
-        emprestimo.setDataDevolucaoPrevista(LocalDate.now().plusWeeks(2));
-        emprestimo.setStatus("Em andamento");
+        Emprestimo emprestimo = Emprestimo
+        .builder()
+        .cliente(cliente)
+        .livro(livro)
+        .dataEmprestimo(LocalDate.now())
+        .dataDevolucaoPrevista(LocalDate.now().plusWeeks(2))
+        .status("Em andamento")
+        .build();
+        
 
         // Atualizar disponibilidade do livro
         livro.setQuantidadeDisponivel(livro.getQuantidadeDisponivel() - 1);

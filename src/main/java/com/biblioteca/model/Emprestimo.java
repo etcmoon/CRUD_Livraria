@@ -12,8 +12,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-
+@Setter
+@Getter
+@Builder
 @Entity
 @Table(name = "Emprestimos")
 public class Emprestimo {
@@ -38,69 +43,6 @@ public class Emprestimo {
     @OneToOne(mappedBy = "emprestimo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Multa multa;
 
-    public Long getEmprestID() {
-        return emprestID;
-    }
-
-    public void setEmprestID(Long emprestID) {
-        this.emprestID = emprestID;
-    }
-
-    public Cliente getCliente() {
-        return cliente;
-    }
-
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
-    }
-
-    public Livro getLivro() {
-        return livro;
-    }
-
-    public void setLivro(Livro livro) {
-        this.livro = livro;
-    }
-
-    public LocalDate getDataEmprestimo() {
-        return dataEmprestimo;
-    }
-
-    public void setDataEmprestimo(LocalDate dataEmprestimo) {
-        this.dataEmprestimo = dataEmprestimo;
-    }
-
-    public LocalDate getDataDevolucaoPrevista() {
-        return dataDevolucaoPrevista;
-    }
-
-    public void setDataDevolucaoPrevista(LocalDate dataDevolucaoPrevista) {
-        this.dataDevolucaoPrevista = dataDevolucaoPrevista;
-    }
-
-    public LocalDate getDataDevolucaoEfetiva() {
-        return dataDevolucaoEfetiva;
-    }
-
-    public void setDataDevolucaoEfetiva(LocalDate dataDevolucaoEfetiva) {
-        this.dataDevolucaoEfetiva = dataDevolucaoEfetiva;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Multa getMulta() {
-        return multa;
-    }
-
-    public void setMulta(Multa multa) {
-        this.multa = multa;
-    }
 
 
     public Emprestimo() {

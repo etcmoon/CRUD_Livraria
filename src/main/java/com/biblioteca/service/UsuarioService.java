@@ -53,7 +53,7 @@ public class UsuarioService {
         }
 
         // Definir data de cadastro se não estiver definida
-        if (usuario.getDataCadastro() == null) {
+        if (usuario.getDataCadastro() == null || usuario.getDataCadastro().toString().isEmpty()) {
             usuario.setDataCadastro(LocalDate.now());
         }
 
