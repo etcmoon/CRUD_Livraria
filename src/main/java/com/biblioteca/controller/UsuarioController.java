@@ -47,9 +47,9 @@ public class UsuarioController {
      * @return Resposta HTTP com o resultado do login ou mensagem de erro.
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam String email, @RequestParam String senha) {
+    public ResponseEntity<?> login(@RequestBody Usuario loginRequest) {
         try {
-            Usuario usuario = usuarioService.login(email, senha);
+            Usuario usuario = usuarioService.login(loginRequest.getEmail(), loginRequest.getSenha());
             return ResponseEntity.ok(usuario);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
