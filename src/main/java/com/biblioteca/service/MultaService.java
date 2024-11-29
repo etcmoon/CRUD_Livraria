@@ -23,8 +23,8 @@ public class MultaService {
         return multaRepository.findById(id);
     }
 
-    public List<Multa> buscarMultasPorCliente(Long clienteId) {
-        return multaRepository.findByEmprestimoClienteUserID(clienteId);
+    public List<Multa> buscarMultasPorCliente(Long usuarioId) {
+        return multaRepository.findByEmprestimoUsuarioUserID(usuarioId);
     }
 
     public Multa pagarMulta(Long id) {

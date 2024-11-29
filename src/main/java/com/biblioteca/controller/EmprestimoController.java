@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.biblioteca.model.Emprestimo;
 import com.biblioteca.service.EmprestimoService;
+import com.biblioteca.service.UsuarioService;
 
 @RestController
 @RequestMapping("/api/emprestimos")
@@ -24,10 +25,13 @@ public class EmprestimoController {
     @Autowired
     private EmprestimoService emprestimoService;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
     @PostMapping
     public ResponseEntity<?> registrarEmprestimo(@RequestBody Long clienteId, Long livroId) {
         try{
-            Emprestimo novoEmprestimo = emprestimoService.registrarEmprestimo(clienteId, livroId);
+            Emprestimo novoEmprestimo = usuarioService.realizarEmprestimo(clienteId, livroId);
             return ResponseEntity.ok(novoEmprestimo);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(404).body(e.getMessage());

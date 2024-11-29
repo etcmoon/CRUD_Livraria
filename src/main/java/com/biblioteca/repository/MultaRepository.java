@@ -9,5 +9,5 @@ import com.biblioteca.model.Multa;
 
 @Repository
 public interface MultaRepository extends JpaRepository<Multa, Long> {
-    List<Multa> findByEmprestimoClienteUserID(Long userID);
+    List<Multa> findByEmprestimoUsuarioUserID(Long userID);
 }

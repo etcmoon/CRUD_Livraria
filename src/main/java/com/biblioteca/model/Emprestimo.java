@@ -12,13 +12,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @Getter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "Emprestimos")
 public class Emprestimo {
@@ -28,8 +32,8 @@ public class Emprestimo {
     private Long emprestID;
 
     @ManyToOne
-    @JoinColumn(name = "clienteID", nullable = false)
-    private Cliente cliente;
+    @JoinColumn(name = "usuarioID", nullable = false)
+    private Usuario usuario;
 
     @ManyToOne
     @JoinColumn(name = "livroID", nullable = false)
@@ -42,23 +46,6 @@ public class Emprestimo {
     
     @OneToOne(mappedBy = "emprestimo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Multa multa;
-
-
-
-    public Emprestimo() {
-    }
-
-    public Emprestimo(Long emprestID, Cliente cliente, Livro livro, LocalDate dataEmprestimo,
-            LocalDate dataDevolucaoPrevista, LocalDate dataDevolucaoEfetiva, String status, Multa multa) {
-        this.emprestID = emprestID;
-        this.cliente = cliente;
-        this.livro = livro;
-        this.dataEmprestimo = dataEmprestimo;
-        this.dataDevolucaoPrevista = dataDevolucaoPrevista;
-        this.dataDevolucaoEfetiva = dataDevolucaoEfetiva;
-        this.status = status;
-        this.multa = multa;
-    }
 
     
 }
